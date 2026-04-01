@@ -1,29 +1,36 @@
 #include <iostream>
 #include "webui.h"
+using namespace std;
 
 void handle_daftar(webui_event_t* e) {
-    std::cout << "Daftar Belanja diklik!" << std::endl;
+    cout << "Daftar Belanja diklik!" << endl;
     webui_run(e->window, "alert('Membuka Daftar Belanja...');");
 }
 
 void handle_inventaris(webui_event_t* e) {
-    std::cout << "Inventaris diklik!" << std::endl;
+    cout << "Inventaris diklik!" << endl;
+    webui_show(e->window, "inventory.html");
+  
 }
 
+void back_to_home(webui_event_t* e) {
+    webui_show(e->window, "index.html");
+}
 void handle_keuangan(webui_event_t* e) {
-    std::cout << "Hitung Keuangan diklik!" << std::endl;
+    cout << "Hitung Keuangan diklik!" << endl;
 }
 
 int main() {
     size_t window = webui_new_window();
+    webui_set_root_folder(window, ".");
     
-    // ✅ Bind functions
+    
     webui_bind(window, "handle_daftar", handle_daftar);
     webui_bind(window, "handle_inventaris", handle_inventaris);
     webui_bind(window, "handle_keuangan", handle_keuangan);
+    webui_bind(window, "back_to_home", back_to_home);
     
-    // ✅ Show dari file HTML
-    webui_show(window, "index.html");
+    webui_show(window, "./index.html");
     
     webui_wait();
     return 0;
