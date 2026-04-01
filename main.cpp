@@ -1,4 +1,5 @@
 #include <iostream>
+#include <direct.h>
 #include <map>
 #include <sstream>
 #include <string>
@@ -78,10 +79,12 @@ void handle_auth(webui_event_t* e) {
     };
 
     if (result.success) {
-        // Set session cookie via JS, then load dashboard in the same native window.
+        // Set session cookie and local storage value via JS then show dashboard.
         std::ostringstream js;
         js << "document.cookie = 'teman_belanja_current_user=" << email << ";path=/';";
+        js << "localStorage.setItem('teman_belanja_current_user', '" << email << "');";
         webui_run_client(e, js.str().c_str());
+        std::cout << "[handle_auth] login success for " << email << ", opening dashboard" << std::endl;
         webui_show(e->window, "dashboard.html");
         return;
     } else {
@@ -97,13 +100,18 @@ void handle_auth(webui_event_t* e) {
 }
 
 void handle_logout(webui_event_t* e) {
-    // Clear session cookie via JS and show login
-    std::string js = "document.cookie = 'teman_belanja_current_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = 'login.html';";
+    // Clear session cookie and show login.
+    std::string js = "document.cookie = 'teman_belanja_current_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';";
     webui_run_client(e, js.c_str());
+    webui_show(e->window, "login.html");
 }
 
 void handle_back_to_login(webui_event_t* e) {
     webui_show(e->window, "login.html");
+}
+
+void handle_show_dashboard(webui_event_t* e) {
+    webui_show(e->window, "dashboard.html");
 }
 
 void handle_daftar(webui_event_t* e) {
@@ -122,12 +130,29 @@ void handle_keuangan(webui_event_t* e) {
 int main() {
     size_t window = webui_new_window();
 
+    // Optional: enable internal webui debug logs
+    webui_set_logger(
+        [](size_t level, const char* log, void* user_data) {
+            (void)user_data;
+            std::cout << "[WebUI] level=" << level << " msg=" << (log ? log : "") << std::endl;
+        },
+        nullptr);
+
     webui_bind(window, "handle_auth", handle_auth);
     webui_bind(window, "handle_logout", handle_logout);
     webui_bind(window, "handle_back_to_login", handle_back_to_login);
+    webui_bind(window, "handle_show_dashboard", handle_show_dashboard);
     webui_bind(window, "handle_daftar", handle_daftar);
     webui_bind(window, "handle_inventaris", handle_inventaris);
     webui_bind(window, "handle_keuangan", handle_keuangan);
 
+    webui_set_config(use_cookies, false); // allow direct local path load without cookie restrictions
     webui_show(window, "login.html");
+
+    // Keep app running until all windows are closed
+    webui_wait();
+
+    // Clean up WebUI resources
+    webui_clean();
+    return 0;
 }

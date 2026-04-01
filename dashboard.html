@@ -107,7 +107,8 @@
             return decodeURIComponent(value);
           }
         }
-        return null;
+        const fallback = localStorage.getItem("teman_belanja_current_user");
+        return fallback ? fallback : null;
       }
       function sanitize(text) {
         const d = document.createElement("div");
@@ -164,8 +165,14 @@
       }
 
       document.getElementById("logout-btn").addEventListener("click", () => {
-        document.cookie =
-          "teman_belanja_current_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        if (typeof webui_fn === "function") {
+          webui_fn("handle_logout");
+        } else {
+          document.cookie =
+            "teman_belanja_current_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          localStorage.removeItem("teman_belanja_current_user");
+          window.location.href = "login.html";
+        }
       });
 
       document

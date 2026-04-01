@@ -380,7 +380,7 @@
         // Check if already logged in
         if (getCurrentUser()) {
           if (typeof webui_fn === "function") {
-            webui_fn("handle_back_to_login"); // or show dashboard
+            webui_fn("handle_show_dashboard");
           } else {
             window.location.href = "dashboard.html";
           }
