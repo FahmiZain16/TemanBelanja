@@ -140,14 +140,19 @@
               break;
           }
         } else {
-          showMessage(
-            "dashboard-message",
-            `Aksi: ${message}. (webui_fn tidak tersedia di mode browser)`,
-            "success",
-          );
+            switch (message) {
+                case "daftar":
+                    window.location.href = "daftar.html";
+                    break;
+                case "inventaris":
+                     window.location.href = "inventory.html";
+                     break;
+                case "keuangan" : 
+                      window.location.href = "keuangan.html";
+                      break;
+                    }
         }
-      }
-
+    }
       function renderView() {
         const currentUser = getCurrentUser();
         if (!currentUser) {
