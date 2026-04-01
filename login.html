@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teman Belanja - Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f9fafc;
+        color: #333;
+      }
+      .app {
+        max-width: 450px;
+        margin: 45px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 3px 14px rgba(20, 35, 65, 0.12);
+        padding: 24px;
+      }
+      h1 {
+        text-align: center;
+        color: #2a3a58;
+        margin-bottom: 6px;
+      }
+      p.subtitle {
+        text-align: center;
+        margin-top: 0;
+        color: #5e6e89;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        margin-top: 5px;
+        border: 1px solid #cdd4e5;
+        border-radius: 6px;
+      }
+      button {
+        margin-top: 16px;
+        width: 100%;
+        padding: 10px;
+        border: 0;
+        border-radius: 8px;
+        background: #2f69ff;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #5c6eb7;
+      }
+      .message {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        min-height: 20px;
+      }
+      .error {
+        color: #c43030;
+      }
+      .success {
+        color: #1c7d1c;
+      }
+      .action-buttons {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .top-right {
+        text-align: right;
+        margin-bottom: 12px;
+      }
+      .badge {
+        font-size: 0.86rem;
+        color: #fff;
+        background: #3f6d47;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>TEMAN BELANJA</h1>
+      <p class="subtitle">
+        Login untuk menggunakan fitur dan menyimpan daftar belanja
+      </p>
+
+      <div id="auth-area">
+        <div id="login-form">
+          <h2>Masuk</h2>
+          <label for="login-email">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="email@contoh.com"
+            required
+          />
+          <label for="login-password">Kata Sandi</label>
+          <input
+            id="login-password"
+            type="password"
+            placeholder="Minimal 6 karakter"
+            required
+          />
+          <button id="login-btn">Masuk</button>
+          <div class="message" id="login-message"></div>
+          <p style="margin-top: 14px">
+            Belum punya akun? <a href="#" id="show-register">Daftar sekarang</a>
+          </p>
+        </div>
+
+        <div id="register-form" class="hidden">
+          <h2>Daftar</h2>
+          <label for="register-name">Nama</label>
+          <input
+            id="register-name"
+            type="text"
+            placeholder="Nama lengkap"
+            required
+          />
+          <label for="register-email">Email</label>
+          <input
+            id="register-email"
+            type="email"
+            placeholder="email@contoh.com"
+            required
+          />
+          <label for="register-password">Kata Sandi</label>
+          <input
+            id="register-password"
+            type="password"
+            placeholder="Minimal 6 karakter"
+            required
+          />
+          <label for="register-password-confirm">Konfirmasi Kata Sandi</label>
+          <input
+            id="register-password-confirm"
+            type="password"
+            placeholder="Ulangi kata sandi"
+            required
+          />
+          <button id="register-btn" class="secondary">Daftar</button>
+          <div class="message" id="register-message"></div>
+          <p style="margin-top: 14px">
+            Sudah punya akun? <a href="#" id="show-login">Masuk</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const storageKey = "teman_belanja_users";
+
+      function getUsers() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || "{}");
+        } catch (e) {
+          console.error(e);
+          return {};
+        }
+      }
+
+      function saveUsers(users) {
+        localStorage.setItem(storageKey, JSON.stringify(users));
+      }
+
+      function getCurrentUser() {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+          const [name, value] = cookie.trim().split("=");
+          if (name === "teman_belanja_current_user") {
+            return decodeURIComponent(value);
+          }
+        }
+        return null;
+      }
+
+      function setCurrentUser(email) {
+        if (email) {
+          document.cookie = `teman_belanja_current_user=${encodeURIComponent(email)};path=/`;
+        } else {
+          document.cookie =
+            "teman_belanja_current_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+      }
+
+      function sanitize(text) {
+        const d = document.createElement("div");
+        d.innerText = text || "";
+        return d.innerHTML;
+      }
+
+      function showMessage(id, text, type = "error") {
+        const el = document.getElementById(id);
+        el.className = "message " + (type === "success" ? "success" : "error");
+        el.innerText = text;
+      }
+
+      function clearMessages() {
+        ["login-message", "register-message", "dashboard-message"].forEach(
+          (id) => {
+            const el = document.getElementById(id);
+            if (el) {
+              el.innerText = "";
+              el.className = "message";
+            }
+          },
+        );
+      }
+
+      function setAuthCookie(name, value) {
+        document.cookie = `${name}=${encodeURIComponent(value)};path=/`;
+      }
+
+      function clearAuthCookies() {
+        ["auth_action", "auth_email", "auth_password", "auth_name"].forEach(
+          (name) => {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          },
+        );
+      }
+
+      function handleAuthResponse(success, message, name = "") {
+        if (success) {
+          // C++ will handle showing dashboard
+          return;
+        }
+
+        if (
+          document.getElementById("login-message") &&
+          !document.getElementById("login-form").classList.contains("hidden")
+        ) {
+          showMessage("login-message", message, success ? "success" : "error");
+        }
+
+        if (
+          document.getElementById("register-message") &&
+          !document.getElementById("register-form").classList.contains("hidden")
+        ) {
+          showMessage(
+            "register-message",
+            message,
+            success ? "success" : "error",
+          );
+        }
+
+        clearAuthCookies();
+      }
+
+      function doLogin() {
+        const email = document
+          .getElementById("login-email")
+          .value.trim()
+          .toLowerCase();
+        const password = document.getElementById("login-password").value;
+
+        if (!email || !password) {
+          showMessage("login-message", "Email dan kata sandi harus diisi.");
+          return;
+        }
+
+        if (typeof webui_fn === "function") {
+          setAuthCookie("auth_action", "login");
+          setAuthCookie("auth_email", email);
+          setAuthCookie("auth_password", password);
+          webui_fn("handle_auth");
+          return;
+        }
+
+        const users = getUsers();
+        if (!users[email]) {
+          showMessage(
+            "login-message",
+            "Akun tidak ditemukan. Silakan daftar terlebih dahulu.",
+          );
+          return;
+        }
+        if (users[email].password !== password) {
+          showMessage("login-message", "Kata sandi salah.");
+          return;
+        }
+
+        setCurrentUser(email);
+        showMessage(
+          "login-message",
+          "Login berhasil! Memuat dashboard...",
+          "success",
+        );
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 550);
+      }
+
+      function doRegister() {
+        const name = document.getElementById("register-name").value.trim();
+        const email = document
+          .getElementById("register-email")
+          .value.trim()
+          .toLowerCase();
+        const password = document.getElementById("register-password").value;
+        const confirm = document.getElementById(
+          "register-password-confirm",
+        ).value;
+
+        if (!name || !email || !password || !confirm) {
+          showMessage("register-message", "Semua field harus diisi.");
+          return;
+        }
+        if (password.length < 6) {
+          showMessage("register-message", "Kata sandi minimal 6 karakter.");
+          return;
+        }
+        if (password !== confirm) {
+          showMessage("register-message", "Konfirmasi kata sandi tidak cocok.");
+          return;
+        }
+
+        if (typeof webui_fn === "function") {
+          setAuthCookie("auth_action", "register");
+          setAuthCookie("auth_name", name);
+          setAuthCookie("auth_email", email);
+          setAuthCookie("auth_password", password);
+          webui_fn("handle_auth");
+          return;
+        }
+
+        const users = getUsers();
+        if (users[email]) {
+          showMessage(
+            "register-message",
+            "Email sudah terdaftar. Silakan masuk.",
+          );
+          return;
+        }
+
+        users[email] = { name, password, createdAt: new Date().toISOString() };
+        saveUsers(users);
+        setCurrentUser(email);
+        showMessage(
+          "register-message",
+          "Pendaftaran berhasil! Masuk otomatis…",
+          "success",
+        );
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 500);
+      }
+
+      document
+        .getElementById("show-register")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          document.getElementById("login-form").classList.add("hidden");
+          document.getElementById("register-form").classList.remove("hidden");
+          clearMessages();
+        });
+
+      document.getElementById("show-login").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("register-form").classList.add("hidden");
+        document.getElementById("login-form").classList.remove("hidden");
+        clearMessages();
+      });
+
+      document.getElementById("login-btn").addEventListener("click", doLogin);
+      document
+        .getElementById("register-btn")
+        .addEventListener("click", doRegister);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Check if already logged in
+        if (getCurrentUser()) {
+          if (typeof webui_fn === "function") {
+            webui_fn("handle_back_to_login"); // or show dashboard
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
