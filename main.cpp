@@ -78,11 +78,12 @@ void handle_auth(webui_event_t* e) {
     };
 
     if (result.success) {
-        // Set session cookie via JS and show dashboard
+        // Set session cookie via JS, then load dashboard in the same native window.
         std::ostringstream js;
-        js << "document.cookie = 'teman_belanja_current_user=" << email << ";path=/'; ";
-        js << "window.location.href = 'dashboard.html';";
+        js << "document.cookie = 'teman_belanja_current_user=" << email << ";path=/';";
         webui_run_client(e, js.str().c_str());
+        webui_show(e->window, "dashboard.html");
+        return;
     } else {
         std::ostringstream js;
         js << "handleAuthResponse(" << (result.success ? "true" : "false") << ", '";
