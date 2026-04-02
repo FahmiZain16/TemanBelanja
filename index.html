@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teman Belanja - Shopping Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // WebUI bridge
+        const webui = {
+            call: function(functionName, ...args) {
+                if (window[functionName]) {
+                    return window[functionName](...args);
+                } else {
+                    console.error('Function not found:', functionName);
+                    return null;
+                }
+            }
+        };
+    </script>
+    <script src="webui.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6">
+    <div class="flex-col flex gap-2 mb-6">
+        <h1 class="text-2xl font-bold text-center">TEMAN BELANJA</h1>
+        <p class="text-center">Kelola Daftar Belanja Anda</p>
+    </div>
+
+    <div id="app" class="flex flex-col gap-4 bg-sky-600 p-4 rounded-lg shadow-2xl text-amber-50">
+        <!-- Add Item Form -->
+        <div id="input-section" class=" p-4 rounded-lg flex flex-col gap-2">
+            <h2 class="text-xl">Tambah Item</h2>
+            <div class="text-black flex flex-col gap-4">
+                <input type="text" id="itemName" placeholder="Nama item" class="p-2 rounded-lg" />
+                <input type="number" id="itemValue" placeholder="Harga" min="0" step="0.01" class="p-2 rounded-lg" />
+                <input type="number" id="itemAmount" placeholder="Jumlah" min="1" step="1" value="1" class="p-2 rounded-lg" />
+                <button onclick="handleAddItem()" class="bg-sky-200 text-black rounded-lg p-2">Tambah Item</button>
+            </div>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="items-section" class="flex flex-col gap-4">
+            <h2>Daftar Belanja</h2>
+            <div id="itemsList" class="p-4 bg-sky-800 rounded-lg w-full"></div>
+            <div id="summary">
+                <p><strong>Total Item: </strong><span id="totalItems">0</span></p>
+                <p><strong>Total Harga: </strong>Rp<span id="totalPrice">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function testFunctions() {
+            const allFuncs = Object.getOwnPropertyNames(window).filter(k => typeof window[k] === 'function');
+            const backendFuncs = allFuncs.filter(k => ['add_item', 'delete_item', 'get_cart', 'toggle_check', 'update_value', 'update_amount'].includes(k));
+            return backendFuncs;
+        }
+
+        async function handleAddItem() {
+            const name = document.getElementById('itemName').value.trim();
+            const value = parseFloat(document.getElementById('itemValue').value) || 0;
+            const amount = parseInt(document.getElementById('itemAmount').value) || 1;
+
+            if (!name) {
+                alert('Silakan masukkan nama item');
+                return;
+            }
+
+            try {
+                let result = window.add_item(name, value, amount);
+                
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                
+                if (result) {
+                    const cartData = JSON.parse(result);
+                    renderCart(cartData);
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('itemValue').value = '';
+                    document.getElementById('itemAmount').value = '1';
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function deleteItem(id) {
+            try {
+                let result = window.delete_item(id);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function toggleCheck(id) {
+            try {
+                let result = window.toggle_check(id);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function updateValue(id, newValue) {
+            try {
+                let result = window.update_value(id, parseFloat(newValue) || 0);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function updateAmount(id, newAmount) {
+            try {
+                let result = window.update_amount(id, Math.max(1, parseInt(newAmount) || 1));
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function renderCart(cartData) {
+            const itemsList = document.getElementById('itemsList');
+            itemsList.innerHTML = '';
+
+            if (!cartData || !cartData.items || cartData.items.length === 0) {
+                itemsList.innerHTML = '<p>Belum ada item</p>';
+            } else {
+                cartData.items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.style.marginBottom = '15px';
+                    itemEl.style.padding = '10px';
+                    itemEl.style.border = '1px solid #ddd';
+                    itemEl.style.borderRadius = '5px';
+                    const itemTotal = item.value * item.amount;
+                    
+                    // Create checkbox with proper event handler
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = item.checked;
+                    checkbox.onchange = async () => {
+                        await toggleCheck(item.id);
+                    };
+                    
+                    // Create price input
+                    const priceInput = document.createElement('input');
+                    priceInput.type = 'number';
+                    priceInput.value = item.value;
+                    priceInput.style.width = '50%';
+                    priceInput.style.color = '#000';
+                    priceInput.style.padding = '5px';
+                    priceInput.style.borderRadius = '5px';
+                    priceInput.min = '0';
+                    priceInput.step = '0.01';
+                    priceInput.onchange = async (e) => {
+                        await updateValue(item.id, e.target.value);
+                    };
+                    
+                    // Create amount input
+                    const amountInput = document.createElement('input');
+                    amountInput.type = 'number';
+                    amountInput.value = item.amount;
+                    amountInput.style.width = '50%';
+                    amountInput.style.color = '#000';
+                    amountInput.style.padding = '5px';
+                    amountInput.style.borderRadius = '5px';
+                    amountInput.min = '1';
+                    amountInput.step = '1';
+                    amountInput.onchange = async (e) => {
+                        await updateAmount(item.id, e.target.value);
+                    };
+                    
+                    // Create delete button
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Hapus';
+                    deleteBtn.style.marginTop = '8px';
+                    deleteBtn.style.backgroundColor = '#e74c3c';
+                    deleteBtn.style.padding = '5px 10px';
+                    deleteBtn.style.borderRadius = '10px';
+                    deleteBtn.onclick = async () => {
+                        await deleteItem(item.id);
+                    };
+                    
+                    // Build the item element
+                    itemEl.innerHTML = '';
+                    const nameDiv = document.createElement('div');
+                    nameDiv.appendChild(checkbox);
+                    const label = document.createElement('strong');
+                    label.textContent = item.name;
+                    nameDiv.appendChild(label);
+                    itemEl.appendChild(nameDiv);
+                    
+                    const priceDiv = document.createElement('div');
+                    priceDiv.style.marginTop = '8px';
+                    priceDiv.textContent = 'Harga: ';
+                    priceDiv.appendChild(priceInput);
+                    const priceSpan = document.createElement('span');
+                    priceSpan.textContent = ' Rp';
+                    priceDiv.appendChild(priceSpan);
+                    itemEl.appendChild(priceDiv);
+                    
+                    const amountDiv = document.createElement('div');
+                    amountDiv.style.marginTop = '8px';
+                    amountDiv.textContent = 'Jumlah: ';
+                    amountDiv.appendChild(amountInput);
+                    itemEl.appendChild(amountDiv);
+                    
+                    const subtotalDiv = document.createElement('div');
+                    subtotalDiv.style.marginTop = '8px';
+                    const subtotalLabel = document.createElement('strong');
+                    subtotalLabel.textContent = 'Subtotal: Rp ' + formatPrice(itemTotal);
+                    subtotalDiv.appendChild(subtotalLabel);
+                    itemEl.appendChild(subtotalDiv);
+                    
+                    itemEl.appendChild(deleteBtn);
+                    itemsList.appendChild(itemEl);
+                });
+            }
+
+            if (cartData) {
+                document.getElementById('totalItems').textContent = cartData.totalItems || 0;
+                document.getElementById('totalPrice').textContent = formatPrice(cartData.totalPrice || 0);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(async function() {
+                try {
+                    let result = window.get_cart();
+                    if (result instanceof Promise) {
+                        result = await result;
+                    }
+                    if (result) {
+                        renderCart(JSON.parse(result));
+                    }
+                } catch (e) {
+                    renderCart({items: [], totalItems: 0, totalPrice: 0});
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
