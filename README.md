@@ -22,7 +22,7 @@ g++ *.cpp -o app.exe -Iwebui-windows-gcc-x64/include -Lwebui-windows-gcc-x64 -lw
 3. Jalankan aplikasi:
 
 ```bash
-app.exe
+./app.exe
 ```
 
 ## note : app pada app.exe bebas diganti.
