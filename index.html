@@ -29,7 +29,7 @@
         <!-- Add Item Form -->
         <div id="input-section" class=" p-4 rounded-lg flex flex-col gap-2">
             <h2 class="text-xl">Tambah Item</h2>
-            <div class="text-black">
+            <div class="text-black flex flex-col gap-4">
                 <input type="text" id="itemName" placeholder="Nama item" class="p-2 rounded-lg" />
                 <input type="number" id="itemValue" placeholder="Harga" min="0" step="0.01" class="p-2 rounded-lg" />
                 <input type="number" id="itemAmount" placeholder="Jumlah" min="1" step="1" value="1" class="p-2 rounded-lg" />
@@ -40,7 +40,7 @@
         <!-- Cart Items List -->
         <div id="items-section" class="flex flex-col gap-4">
             <h2>Daftar Belanja</h2>
-            <div id="itemsList" class="p-4 bg-sky-800 rounded-lg"></div>
+            <div id="itemsList" class="p-4 bg-sky-800 rounded-lg w-full"></div>
             <div id="summary">
                 <p><strong>Total Item: </strong><span id="totalItems">0</span></p>
                 <p><strong>Total Harga: </strong>Rp<span id="totalPrice">0</span></p>
@@ -166,7 +166,7 @@
                     const priceInput = document.createElement('input');
                     priceInput.type = 'number';
                     priceInput.value = item.value;
-                    priceInput.style.width = '10%';
+                    priceInput.style.width = '50%';
                     priceInput.style.color = '#000';
                     priceInput.style.padding = '5px';
                     priceInput.style.borderRadius = '5px';
@@ -180,7 +180,7 @@
                     const amountInput = document.createElement('input');
                     amountInput.type = 'number';
                     amountInput.value = item.amount;
-                    amountInput.style.width = '10%';
+                    amountInput.style.width = '50%';
                     amountInput.style.color = '#000';
                     amountInput.style.padding = '5px';
                     amountInput.style.borderRadius = '5px';
