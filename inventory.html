@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Teman Belanja - Inventaris</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f9fafc;
+    color: #333;
+}
+
+.app {
+    max-width: 450px;
+    margin: 45px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 14px rgba(20, 35, 65, 0.12);
+    padding: 24px;
+}
+
+h1 {
+    text-align: center;
+    color: #2a3a58;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    border-radius: 8px;
+    background: #2f69ff;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #1e4ed8;
+}
+
+button.secondary {
+    background: #5c6eb7;
+}
+
+button.secondary:hover {
+    background: #4a5a95;
+}
+
+.item {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-top: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.item:hover {
+    background: #f3f6ff;
+    border-color: #2f69ff;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    cursor: pointer;
+}
+
+.item-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: 0.2s;
+    margin: 0;
+    width: auto;
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
+.edit-btn {
+    background: #f39c12;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: 0.2s;
+    margin: 0;
+    width: auto;
+}
+
+.edit-btn:hover {
+    background: #d68910;
+}
+
+.arrow {
+    color: #2f69ff;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 350px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-box h3 {
+    margin-top: 0;
+    color: #2a3a58;
+}
+
+.modal-box p {
+    margin: 8px 0;
+}
+
+.close-btn {
+    background: #999;
+    margin-top: 15px;
+}
+
+.close-btn:hover {
+    background: #777;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.summary {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+}
+
+.summary h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    padding-top: 12px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.summary-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.summary-value {
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
+.badge-low {
+    background: #e74c3c;
+    color: white;
+}
+
+.badge-medium {
+    background: #f39c12;
+    color: white;
+}
+
+.badge-good {
+    background: #27ae60;
+    color: white;
+}
+
+.filter-section {
+    margin: 16px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #2f69ff;
+    background: white;
+    color: #2f69ff;
+    cursor: pointer;
+    font-size: 0.85em;
+    margin: 0;
+    width: auto;
+}
+
+.filter-btn.active {
+    background: #2f69ff;
+    color: white;
+}
+
+.stock-action {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.stock-action input {
+    margin-top: 0;
+}
+
+.stock-action button {
+    margin-top: 0;
+    width: auto;
+    padding: 10px 16px;
+}
+
+.history-item {
+    padding: 8px;
+    border-left: 3px solid #2f69ff;
+    background: #f8f9fa;
+    margin-top: 6px;
+    font-size: 0.9em;
+}
+
+.history-in {
+    border-left-color: #27ae60;
+}
+
+.history-out {
+    border-left-color: #e74c3c;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <h1>Inventaris Toko</h1>
+
+    <input id="nama" placeholder="Nama Barang">
+    <input id="kategori" placeholder="Kategori (misal: Makanan, Elektronik)">
+    <input id="stok" type="number" placeholder="Stok Awal" min="0" value="0">
+    <input id="hargaBeli" type="number" placeholder="Harga Beli" min="0" step="0.01">
+    <input id="hargaJual" type="number" placeholder="Harga Jual" min="0" step="0.01">
+
+    <button onclick="tambahBarang()">➕ Tambah Barang</button>
+
+    <div class="filter-section">
+        <button class="filter-btn active" onclick="filterKategori('semua')">Semua</button>
+        <button class="filter-btn" onclick="filterKategori('stokRendah')">Stok Rendah</button>
+        <span id="kategoriFilters"></span>
+    </div>
+
+    <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+    <div id="list"></div>
+
+    <div class="summary" id="summary">
+        <h3>Ringkasan Inventaris</h3>
+        <div class="summary-row">
+            <span class="summary-label">Total Jenis Barang:</span>
+            <span class="summary-value" id="total-items">0</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Total Stok:</span>
+            <span class="summary-value" id="total-stock">0</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Nilai Inventaris:</span>
+            <span class="summary-value">Rp <span id="total-value">0</span></span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Potensi Keuntungan:</span>
+            <span class="summary-value">Rp <span id="total-profit">0</span></span>
+        </div>
+    </div>
+
+    <button class="secondary" onclick="location.href='dashboard.html'">
+        ← Kembali ke Dashboard
+    </button>
+
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal" id="modalDetail">
+    <div class="modal-box">
+        <h3 id="modal-nama"></h3>
+        
+        <p><strong>Kategori:</strong> <span id="modal-kategori"></span></p>
+        <p><strong>Stok Saat Ini:</strong> <span id="modal-stok"></span></p>
+        <p><strong>Harga Beli:</strong> Rp <span id="modal-hargaBeli"></span></p>
+        <p><strong>Harga Jual:</strong> Rp <span id="modal-hargaJual"></span></p>
+        <p><strong>Margin:</strong> <span id="modal-margin"></span></p>
+        <p><strong>Nilai Total:</strong> Rp <span id="modal-nilaiTotal"></span></p>
+
+        <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;">
+        
+        <h4 style="margin-bottom: 8px;">Update Stok</h4>
+        <div class="stock-action">
+            <input type="number" id="stock-change" placeholder="Jumlah" min="1" value="1">
+            <button onclick="updateStok('in')" style="background: #27ae60;">+ Masuk</button>
+            <button onclick="updateStok('out')" style="background: #e74c3c;">- Keluar</button>
+        </div>
+
+        <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;">
+        
+        <h4 style="margin-bottom: 8px;">Riwayat Stok</h4>
+        <div id="modal-history"></div>
+
+        <button class="close-btn" onclick="closeModal()">Tutup</button>
+    </div>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal" id="modalEdit">
+    <div class="modal-box">
+        <h3>Edit Barang</h3>
+        
+        <input id="edit-nama" placeholder="Nama Barang">
+        <input id="edit-kategori" placeholder="Kategori">
+        <input id="edit-stok" type="number" placeholder="Stok" min="0">
+        <input id="edit-hargaBeli" type="number" placeholder="Harga Beli" min="0" step="0.01">
+        <input id="edit-hargaJual" type="number" placeholder="Harga Jual" min="0" step="0.01">
+
+        <button onclick="simpanEdit()">💾 Simpan Perubahan</button>
+        <button class="close-btn" onclick="closeEditModal()">Batal</button>
+    </div>
+</div>
+
+
+<script>
+
+let items = JSON.parse(localStorage.getItem('inventarisToko')) || [];
+let currentItemIndex = -1;
+let currentFilter = 'semua';
+
+render();
+
+function tambahBarang() {
+    let nama = document.getElementById("nama").value.trim();
+    let kategori = document.getElementById("kategori").value.trim() || "Umum";
+    let stok = parseInt(document.getElementById("stok").value) || 0;
+    let hargaBeli = parseFloat(document.getElementById("hargaBeli").value) || 0;
+    let hargaJual = parseFloat(document.getElementById("hargaJual").value) || 0;
+
+    if (!nama) {
+        alert("Nama barang tidak boleh kosong!");
+        return;
+    }
+
+    items.push({
+        nama,
+        kategori,
+        stok,
+        hargaBeli,
+        hargaJual,
+        history: [{
+            type: 'in',
+            jumlah: stok,
+            tanggal: new Date().toLocaleString('id-ID'),
+            keterangan: 'Stok awal'
+        }]
+    });
+
+    saveToLocalStorage();
+    clearForm();
+    render();
+}
+
+function clearForm() {
+    document.getElementById("nama").value = "";
+    document.getElementById("kategori").value = "";
+    document.getElementById("stok").value = "0";
+    document.getElementById("hargaBeli").value = "";
+    document.getElementById("hargaJual").value = "";
+}
+
+function render() {
+    renderKategoriFilters();
+    renderList();
+    updateSummary();
+}
+
+function renderKategoriFilters() {
+    let kategoris = [...new Set(items.map(item => item.kategori))];
+    let html = '';
+    
+    kategoris.forEach(kat => {
+        html += `<button class="filter-btn" onclick="filterKategori('${kat}')">${escapeHtml(kat)}</button>`;
+    });
+    
+    document.getElementById('kategoriFilters').innerHTML = html;
+}
+
+function filterKategori(filter) {
+    currentFilter = filter;
+    
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    renderList();
+}
+
+function renderList() {
+    let filteredItems = items;
+    
+    if (currentFilter === 'stokRendah') {
+        filteredItems = items.filter(item => item.stok < 10);
+    } else if (currentFilter !== 'semua') {
+        filteredItems = items.filter(item => item.kategori === currentFilter);
+    }
+    
+    let html = "";
+
+    if (filteredItems.length === 0) {
+        html = '<div class="empty-state">Belum ada barang di kategori ini.<br>Tambahkan barang baru!</div>';
+    } else {
+        filteredItems.forEach((item, originalIndex) => {
+            // Find original index
+            let index = items.indexOf(item);
+            
+            // Badge stok
+            let stokBadge = '';
+            if (item.stok === 0) {
+                stokBadge = '<span class="badge badge-low">Habis</span>';
+            } else if (item.stok < 10) {
+                stokBadge = '<span class="badge badge-low">Rendah</span>';
+            } else if (item.stok < 50) {
+                stokBadge = '<span class="badge badge-medium">Sedang</span>';
+            } else {
+                stokBadge = '<span class="badge badge-good">Aman</span>';
+            }
+
+            html += `
+            <div class="item">
+                
+                <div class="item-left" onclick="showDetail(${index})">
+                    <div>
+                        <b>${escapeHtml(item.nama)}</b> ${stokBadge}
+                        <br>
+                        <small style="color: #666;">
+                            ${escapeHtml(item.kategori)} • Stok: ${item.stok}
+                        </small>
+                        <br>
+                        <small style="color: #27ae60;">
+                            Jual: ${formatRupiah(item.hargaJual)} • Beli: ${formatRupiah(item.hargaBeli)}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="item-right">
+                    <span class="arrow" onclick="showDetail(${index})">➡️</span>
+                    <button class="edit-btn" onclick="showEdit(${index}, event)">
+                        Edit
+                    </button>
+                    <button class="delete-btn" onclick="deleteItem(${index}, event)">
+                        Hapus
+                    </button>
+                </div>
+
+            </div>
+            `;
+        });
+    }
+
+    document.getElementById("list").innerHTML = html;
+}
+
+function updateSummary() {
+    let totalItems = items.length;
+    let totalStock = items.reduce((sum, item) => sum + item.stok, 0);
+    let totalValue = items.reduce((sum, item) => sum + (item.hargaBeli * item.stok), 0);
+    let totalProfit = items.reduce((sum, item) => sum + ((item.hargaJual - item.hargaBeli) * item.stok), 0);
+    
+    document.getElementById('total-items').textContent = totalItems;
+    document.getElementById('total-stock').textContent = totalStock;
+    document.getElementById('total-value').textContent = formatRupiah(totalValue);
+    document.getElementById('total-profit').textContent = formatRupiah(totalProfit);
+    
+    if (totalItems === 0) {
+        document.getElementById('summary').style.display = 'none';
+    } else {
+        document.getElementById('summary').style.display = 'block';
+    }
+}
+
+function showDetail(index) {
+    currentItemIndex = index;
+    let item = items[index];
+
+    document.getElementById("modal-nama").innerText = item.nama;
+    document.getElementById("modal-kategori").innerText = item.kategori;
+    document.getElementById("modal-stok").innerText = item.stok;
+    document.getElementById("modal-hargaBeli").innerText = formatRupiah(item.hargaBeli);
+    document.getElementById("modal-hargaJual").innerText = formatRupiah(item.hargaJual);
+    
+    let margin = item.hargaBeli > 0 
+        ? (((item.hargaJual - item.hargaBeli) / item.hargaBeli) * 100).toFixed(1) + '%'
+        : 'N/A';
+    document.getElementById("modal-margin").innerText = margin;
+    
+    let nilaiTotal = item.hargaBeli * item.stok;
+    document.getElementById("modal-nilaiTotal").innerText = formatRupiah(nilaiTotal);
+
+    // Render history
+    let historyHtml = '';
+    if (item.history && item.history.length > 0) {
+        item.history.slice().reverse().forEach(h => {
+            let className = h.type === 'in' ? 'history-in' : 'history-out';
+            let symbol = h.type === 'in' ? '+' : '-';
+            historyHtml += `
+                <div class="history-item ${className}">
+                    <strong>${symbol}${h.jumlah}</strong> - ${h.keterangan || (h.type === 'in' ? 'Barang masuk' : 'Barang keluar')}
+                    <br>
+                    <small style="color: #666;">${h.tanggal}</small>
+                </div>
+            `;
+        });
+    } else {
+        historyHtml = '<p style="color: #999;">Belum ada riwayat</p>';
+    }
+    document.getElementById("modal-history").innerHTML = historyHtml;
+
+    document.getElementById("stock-change").value = "1";
+    document.getElementById("modalDetail").style.display = "flex";
+}
+
+function updateStok(type) {
+    if (currentItemIndex < 0) return;
+    
+    let jumlah = parseInt(document.getElementById("stock-change").value) || 0;
+    if (jumlah <= 0) {
+        alert("Jumlah harus lebih dari 0!");
+        return;
+    }
+    
+    let item = items[currentItemIndex];
+    
+    if (type === 'in') {
+        item.stok += jumlah;
+        item.history = item.history || [];
+        item.history.push({
+            type: 'in',
+            jumlah: jumlah,
+            tanggal: new Date().toLocaleString('id-ID'),
+            keterangan: 'Barang masuk'
+        });
+    } else if (type === 'out') {
+        if (item.stok < jumlah) {
+            alert("Stok tidak cukup!");
+            return;
+        }
+        item.stok -= jumlah;
+        item.history = item.history || [];
+        item.history.push({
+            type: 'out',
+            jumlah: jumlah,
+            tanggal: new Date().toLocaleString('id-ID'),
+            keterangan: 'Barang keluar'
+        });
+    }
+    
+    saveToLocalStorage();
+    render();
+    showDetail(currentItemIndex); // Refresh modal
+}
+
+function showEdit(index, e) {
+    e.stopPropagation();
+    currentItemIndex = index;
+    let item = items[index];
+    
+    document.getElementById("edit-nama").value = item.nama;
+    document.getElementById("edit-kategori").value = item.kategori;
+    document.getElementById("edit-stok").value = item.stok;
+    document.getElementById("edit-hargaBeli").value = item.hargaBeli;
+    document.getElementById("edit-hargaJual").value = item.hargaJual;
+    
+    document.getElementById("modalEdit").style.display = "flex";
+}
+
+function simpanEdit() {
+    if (currentItemIndex < 0) return;
+    
+    let item = items[currentItemIndex];
+    let oldStok = item.stok;
+    
+    item.nama = document.getElementById("edit-nama").value.trim() || item.nama;
+    item.kategori = document.getElementById("edit-kategori").value.trim() || item.kategori;
+    item.stok = parseInt(document.getElementById("edit-stok").value) || 0;
+    item.hargaBeli = parseFloat(document.getElementById("edit-hargaBeli").value) || 0;
+    item.hargaJual = parseFloat(document.getElementById("edit-hargaJual").value) || 0;
+    
+    // Track stock change
+    if (oldStok !== item.stok) {
+        item.history = item.history || [];
+        item.history.push({
+            type: item.stok > oldStok ? 'in' : 'out',
+            jumlah: Math.abs(item.stok - oldStok),
+            tanggal: new Date().toLocaleString('id-ID'),
+            keterangan: 'Edit manual'
+        });
+    }
+    
+    saveToLocalStorage();
+    closeEditModal();
+    render();
+}
+
+function closeEditModal() {
+    document.getElementById("modalEdit").style.display = "none";
+    currentItemIndex = -1;
+}
+
+function deleteItem(index, e) {
+    e.stopPropagation();
+    
+    if (confirm(`Yakin ingin menghapus "${items[index].nama}"?`)) {
+        items.splice(index, 1);
+        saveToLocalStorage();
+        render();
+    }
+}
+
+function closeModal() {
+    document.getElementById("modalDetail").style.display = "none";
+    currentItemIndex = -1;
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('inventarisToko', JSON.stringify(items));
+}
+
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(angka);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+window.onclick = function(event) {
+    const modalDetail = document.getElementById('modalDetail');
+    const modalEdit = document.getElementById('modalEdit');
+    if (event.target == modalDetail) {
+        closeModal();
+    }
+    if (event.target == modalEdit) {
+        closeEditModal();
+    }
+}
+
+</script>
+
+</body>
+</html>

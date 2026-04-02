@@ -9,110 +9,215 @@
 <style>
 
 body {
-font-family: Arial, sans-serif;
-margin: 0;
-background: #f9fafc;
-color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f9fafc;
+    color: #333;
 }
 
 .app {
-max-width: 450px;
-margin: 45px auto;
-background: #fff;
-border-radius: 12px;
-box-shadow: 0 3px 14px rgba(20, 35, 65, 0.12);
-padding: 24px;
+    max-width: 450px;
+    margin: 45px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 14px rgba(20, 35, 65, 0.12);
+    padding: 24px;
 }
 
 h1 {
-text-align: center;
-color: #2a3a58;
+    text-align: center;
+    color: #2a3a58;
 }
 
 input {
-width:100%;
-padding:10px;
-margin-top:8px;
-border-radius:8px;
-border:1px solid #ddd;
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
 }
 
 button {
-margin-top:10px;
-width:100%;
-padding:10px;
-border:0;
-border-radius:8px;
-background:#2f69ff;
-color:white;
-font-weight:700;
-cursor:pointer;
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    border-radius: 8px;
+    background: #2f69ff;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #1e4ed8;
 }
 
 button.secondary {
-background:#5c6eb7;
+    background: #5c6eb7;
+}
+
+button.secondary:hover {
+    background: #4a5a95;
 }
 
 .item {
-padding:12px;
-border-radius:8px;
-border:1px solid #eee;
-margin-top:8px;
-cursor:pointer;
-transition:0.2s;
-display:flex;
-align-items:center;
-justify-content:space-between;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-top: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .item:hover {
-background:#f3f6ff;
-border-color:#2f69ff;
+    background: #f3f6ff;
+    border-color: #2f69ff;
 }
 
 .item-left {
-display:flex;
-align-items:center;
-gap:10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    cursor: pointer;
+}
+
+.item-right {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .checkbox {
-width:18px;
-height:18px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: 0.2s;
+    margin: 0;
+    width: auto;
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
+.arrow {
+    color: #2f69ff;
+    font-size: 1.2em;
+    cursor: pointer;
 }
 
 .modal {
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.4);
-display:none;
-align-items:center;
-justify-content:center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 .modal-box {
-background:white;
-padding:20px;
-border-radius:10px;
-width:350px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 350px;
+}
+
+.modal-box h3 {
+    margin-top: 0;
+    color: #2a3a58;
+}
+
+.modal-box p {
+    margin: 8px 0;
 }
 
 .link-btn {
-display:block;
-text-align:center;
-padding:8px;
-background:#2f69ff;
-color:white;
-border-radius:6px;
-margin-top:10px;
-text-decoration:none;
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background: #2f69ff;
+    color: white;
+    border-radius: 6px;
+    margin-top: 10px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.link-btn:hover {
+    background: #1e4ed8;
 }
 
 .close-btn {
-background:#999;
+    background: #999;
+    margin-top: 15px;
+}
+
+.close-btn:hover {
+    background: #777;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+/* ========== SUMMARY SECTION ========== */
+.summary {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+}
+
+.summary h3 {
+    margin: 0 0 12px 0;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    padding-top: 12px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.summary-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.summary-value {
+    font-weight: 600;
 }
 
 </style>
@@ -123,21 +228,42 @@ background:#999;
 
 <div class="app">
 
-<h1>Daftar Belanja</h1>
+    <h1>Daftar Belanja</h1>
 
-<input id="nama" placeholder="Nama Barang">
-<input id="jumlah" placeholder="Jumlah">
-<input id="harga" placeholder="Harga (optional)">
+    <input id="nama" placeholder="Nama Barang">
+    <input id="jumlah" type="number" placeholder="Jumlah" min="1" value="1">
+    <input id="harga" type="number" placeholder="Harga (optional)" min="0" step="0.01">
 
-<button onclick="tambah()">Tambah Barang</button>
+    <button onclick="tambah()">➕ Tambah Barang</button>
 
-<hr>
+    <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
 
-<div id="list"></div>
+    <div id="list"></div>
 
-<button class="secondary" onclick="location.href='dashboard.html'">
-← Kembali
-</button>
+    <!-- ========== SUMMARY SECTION ========== -->
+    <div class="summary" id="summary">
+        <h3>Ringkasan Belanja</h3>
+        <div class="summary-row">
+            <span class="summary-label">Total Barang:</span>
+            <span class="summary-value" id="total-items">0</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Sudah Dibeli:</span>
+            <span class="summary-value" id="checked-items">0</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Belum Dibeli:</span>
+            <span class="summary-value" id="unchecked-items">0</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Total Harga:</span>
+            <span class="summary-value">Rp <span id="total-price">0</span></span>
+        </div>
+    </div>
+
+    <button class="secondary" onclick="location.href='dashboard.html'">
+        ← Kembali ke Dashboard
+    </button>
 
 </div>
 
@@ -145,126 +271,244 @@ background:#999;
 
 <div class="modal" id="modal">
 
-<div class="modal-box">
+    <div class="modal-box">
 
-<h3 id="modal-nama"></h3>
+        <h3 id="modal-nama"></h3>
 
-<p>Jumlah : <span id="modal-jumlah"></span></p>
-<p>Harga : <span id="modal-harga"></span></p>
+        <p><strong>Jumlah:</strong> <span id="modal-jumlah"></span></p>
+        <p><strong>Harga:</strong> Rp <span id="modal-harga"></span></p>
+        <p><strong>Subtotal:</strong> Rp <span id="modal-subtotal"></span></p>
 
-<a id="google-link" target="_blank" class="link-btn">
-Cek Harga Google
-</a>
+        <a id="google-link" target="_blank" class="link-btn">
+            Cek Harga di Google
+        </a>
 
-<a id="shop-link" target="_blank" class="link-btn">
-Beli Online
-</a>
+        <a id="shop-link" target="_blank" class="link-btn">
+            Beli di Tokopedia
+        </a>
 
-<button class="close-btn" onclick="closeModal()">
-Tutup
-</button>
+        <!-- Centang dari Modal -->
+        <button id="modal-check-btn" onclick="toggleFromModal()">
+            ✓ Tandai Sudah Dibeli
+        </button>
 
-</div>
+        <button class="close-btn" onclick="closeModal()">
+            Tutup
+        </button>
+
+    </div>
 
 </div>
 
 
 <script>
 
-let items = []
+// Load data dari localStorage (persistent)
+let items = JSON.parse(localStorage.getItem('daftarBelanja')) || [];
+let currentReviewIndex = -1; // Track item yang sedang di-review
 
-function tambah(){
+// Render saat halaman load
+render();
 
-let nama = document.getElementById("nama").value
-let jumlah = document.getElementById("jumlah").value
-let harga = document.getElementById("harga").value
+function tambah() {
+    let nama = document.getElementById("nama").value.trim();
+    let jumlah = parseInt(document.getElementById("jumlah").value) || 1;
+    let harga = parseFloat(document.getElementById("harga").value) || 0;
 
-items.push({
-nama,
-jumlah,
-harga,
-checked:false
-})
+    if (!nama) {
+        alert("Nama barang tidak boleh kosong!");
+        return;
+    }
 
-render()
+    items.push({
+        nama,
+        jumlah,
+        harga,
+        checked: false
+    });
 
+    // Save to localStorage
+    saveToLocalStorage();
+
+    // Clear form
+    document.getElementById("nama").value = "";
+    document.getElementById("jumlah").value = "1";
+    document.getElementById("harga").value = "";
+
+    render();
 }
 
-function render(){
+function render() {
+    let html = "";
 
-let html = ""
+    if (items.length === 0) {
+        html = '<div class="empty-state">Belum ada barang.<br>Tambahkan barang pertama Anda!</div>';
+    } else {
+        items.forEach((item, index) => {
+            // Format harga
+            let hargaDisplay = item.harga > 0 
+                ? formatRupiah(item.harga) 
+                : '<span style="color: #999;">Belum ada harga</span>';
 
-items.forEach((item,index)=>{
+            // Style untuk item yang sudah dicentang
+            let itemStyle = item.checked 
+                ? 'opacity: 0.6; text-decoration: line-through;' 
+                : '';
 
-html += `
+            html += `
+            <div class="item" style="${itemStyle}">
+                
+                <div class="item-left" onclick="review(${index})">
+                    
+                    <input 
+                        type="checkbox"
+                        class="checkbox"
+                        ${item.checked ? "checked" : ""}
+                        onclick="toggle(${index}, event)"
+                    >
 
-<div class="item" onclick="review(${index})">
+                    <div>
+                        <b>${escapeHtml(item.nama)}</b>
+                        <br>
+                        <small style="color: #666;">
+                            ${item.jumlah} item • ${hargaDisplay}
+                        </small>
+                    </div>
 
-<div class="item-left">
+                </div>
 
-<input 
-type="checkbox"
-class="checkbox"
-${item.checked ? "checked":""}
-onclick="toggle(${index},event)"
->
+                <div class="item-right">
+                    <span class="arrow" onclick="review(${index})">➡️</span>
+                    <button class="delete-btn" onclick="deleteItem(${index}, event)">
+                        Hapus
+                    </button>
+                </div>
 
-<div>
+            </div>
+            `;
+        });
+    }
 
-<b>${item.nama}</b>
-<br>
-<small>${item.jumlah} item</small>
-
-</div>
-
-</div>
-
-<div>
-
-➡️
-
-</div>
-
-</div>
-
-`
-
-})
-
-document.getElementById("list").innerHTML = html
-
+    document.getElementById("list").innerHTML = html;
+    
+    // Update summary
+    updateSummary();
 }
 
-function toggle(index,e){
-
-e.stopPropagation()
-
-items[index].checked = !items[index].checked
-
-render()
-
+function updateSummary() {
+    let totalItems = items.length;
+    let checkedItems = items.filter(item => item.checked).length;
+    let uncheckedItems = totalItems - checkedItems;
+    
+    // Calculate total price (harga * jumlah for each item)
+    let totalPrice = items.reduce((sum, item) => {
+        return sum + (item.harga * item.jumlah);
+    }, 0);
+    
+    // Update DOM
+    document.getElementById('total-items').textContent = totalItems;
+    document.getElementById('checked-items').textContent = checkedItems;
+    document.getElementById('unchecked-items').textContent = uncheckedItems;
+    document.getElementById('total-price').textContent = formatRupiah(totalPrice);
+    
+    // Hide summary if no items
+    if (totalItems === 0) {
+        document.getElementById('summary').style.display = 'none';
+    } else {
+        document.getElementById('summary').style.display = 'block';
+    }
 }
 
-function review(index){
-
-let item = items[index]
-
-document.getElementById("modal-nama").innerText = item.nama
-document.getElementById("modal-jumlah").innerText = item.jumlah
-document.getElementById("modal-harga").innerText = item.harga || "Belum ada"
-
-let google = `https://www.google.com/search?q=${item.nama}`
-let shop = `https://www.tokopedia.com/search?q=${item.nama}`
-
-document.getElementById("google-link").href = google
-document.getElementById("shop-link").href = shop
-
-document.getElementById("modal").style.display = "flex"
-
+function toggle(index, e) {
+    e.stopPropagation();
+    items[index].checked = !items[index].checked;
+    saveToLocalStorage();
+    render();
 }
 
-function closeModal(){
-document.getElementById("modal").style.display = "none"
+function deleteItem(index, e) {
+    e.stopPropagation();
+    
+    if (confirm(`Yakin ingin menghapus "${items[index].nama}"?`)) {
+        items.splice(index, 1);
+        saveToLocalStorage();
+        render();
+    }
+}
+
+function review(index) {
+    currentReviewIndex = index;
+    let item = items[index];
+
+    document.getElementById("modal-nama").innerText = item.nama;
+    document.getElementById("modal-jumlah").innerText = item.jumlah + " item";
+    
+    let hargaText = item.harga > 0 
+        ? formatRupiah(item.harga) 
+        : "Belum ada harga";
+    document.getElementById("modal-harga").innerText = hargaText;
+    
+    // Calculate and show subtotal
+    let subtotal = item.harga * item.jumlah;
+    document.getElementById("modal-subtotal").innerText = formatRupiah(subtotal);
+
+    // Update links
+    let google = `https://www.google.com/search?q=${encodeURIComponent(item.nama)}`;
+    let shop = `https://www.tokopedia.com/search?q=${encodeURIComponent(item.nama)}`;
+
+    document.getElementById("google-link").href = google;
+    document.getElementById("shop-link").href = shop;
+
+    // Update tombol centang
+    let checkBtn = document.getElementById("modal-check-btn");
+    if (item.checked) {
+        checkBtn.textContent = "↩️ Belum Dibeli";
+        checkBtn.style.background = "#f39c12";
+    } else {
+        checkBtn.textContent = "✓ Tandai Sudah Dibeli";
+        checkBtn.style.background = "#27ae60";
+    }
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+function toggleFromModal() {
+    if (currentReviewIndex >= 0) {
+        items[currentReviewIndex].checked = !items[currentReviewIndex].checked;
+        saveToLocalStorage();
+        render();
+        closeModal();
+    }
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+    currentReviewIndex = -1;
+}
+
+function saveToLocalStorage() {
+    localStorage.setItem('daftarBelanja', JSON.stringify(items));
+}
+
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(angka);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        closeModal();
+    }
 }
 
 </script>
