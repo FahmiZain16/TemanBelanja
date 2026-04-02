@@ -1,16 +1,300 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Teman Belanja</title>
+    <title>Teman Belanja - Shopping Cart</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        // WebUI bridge - will be available when page loads
+        const webui = {
+            call: function(functionName, ...args) {
+                console.log('Calling:', functionName, 'with', args);
+                // This will be defined by WebUI runtime
+                if (window[functionName]) {
+                    return window[functionName](...args);
+                } else {
+                    console.error('Function not found:', functionName);
+                    return null;
+                }
+            }
+        };
+    </script>
     <script src="webui.js"></script>
 </head>
 <body>
     <h1>TEMAN BELANJA</h1>
-    <p>Buat Daftar Belanja Tanpa Ribet</p>
-    
-    <button onclick="webui_fn('handle_daftar');">Daftar Belanja</button>
-    <button onclick="webui_fn('handle_inventaris');">Inventaris</button>
-    <button onclick="webui_fn('handle_keuangan');">Hitung Keuangan</button>
+    <p>Kelola Daftar Belanja Anda</p>
+
+    <div id="app">
+        <!-- Add Item Form -->
+        <div id="input-section">
+            <h2>Tambah Item</h2>
+            <input type="text" id="itemName" placeholder="Nama item" />
+            <input type="number" id="itemValue" placeholder="Harga" min="0" step="0.01" />
+            <input type="number" id="itemAmount" placeholder="Jumlah" min="1" step="1" value="1" />
+            <button onclick="handleAddItem()">Tambah Item</button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="items-section">
+            <h2>Daftar Belanja</h2>
+            <div id="itemsList"></div>
+            <div id="summary">
+                <p><strong>Total Item: </strong><span id="totalItems">0</span></p>
+                <p><strong>Total Harga: </strong>Rp <span id="totalPrice">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testFunctions() {
+            console.log('[App] Testing available global functions...');
+            const allFuncs = Object.getOwnPropertyNames(window).filter(k => typeof window[k] === 'function');
+            const backendFuncs = allFuncs.filter(k => ['add_item', 'delete_item', 'get_cart', 'toggle_check', 'update_value', 'update_amount'].includes(k));
+            console.log('[App] Backend functions found:', backendFuncs);
+            return backendFuncs;
+        }
+
+        async function handleAddItem() {
+            const name = document.getElementById('itemName').value.trim();
+            const value = parseFloat(document.getElementById('itemValue').value) || 0;
+            const amount = parseInt(document.getElementById('itemAmount').value) || 1;
+
+            if (!name) {
+                alert('Silakan masukkan nama item');
+                return;
+            }
+
+            try {
+                console.log('[App] Calling add_item with:', name, value, amount);
+                let result = window.add_item(name, value, amount);
+                
+                // Handle Promise if returned
+                if (result instanceof Promise) {
+                    console.log('[App] add_item returned a Promise, awaiting...');
+                    result = await result;
+                }
+                
+                console.log('[App] Result from add_item:', result);
+                
+                if (result) {
+                    const cartData = JSON.parse(result);
+                    renderCart(cartData);
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('itemValue').value = '';
+                    document.getElementById('itemAmount').value = '1';
+                } else {
+                    console.warn('[App] add_item returned null or empty');
+                }
+            } catch (e) {
+                console.error('[App] Error:', e);
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function deleteItem(id) {
+            try {
+                console.log('[App] Deleting item:', id);
+                let result = window.delete_item(id);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                console.log('[App] Delete result:', result);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('[App] Delete error:', e);
+            }
+        }
+
+        async function toggleCheck(id) {
+            try {
+                console.log('[App] Toggling check:', id);
+                let result = window.toggle_check(id);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                console.log('[App] Toggle result:', result);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('[App] Toggle error:', e);
+            }
+        }
+
+        async function updateValue(id, newValue) {
+            try {
+                console.log('[App] Updating value:', id, newValue);
+                let result = window.update_value(id, parseFloat(newValue) || 0);
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                console.log('[App] Update value result:', result);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('[App] Update value error:', e);
+            }
+        }
+
+        async function updateAmount(id, newAmount) {
+            try {
+                console.log('[App] Updating amount:', id, newAmount);
+                let result = window.update_amount(id, Math.max(1, parseInt(newAmount) || 1));
+                if (result instanceof Promise) {
+                    result = await result;
+                }
+                console.log('[App] Update amount result:', result);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('[App] Update amount error:', e);
+            }
+        }
+
+        function deleteItem(id) {
+            try {
+                const result = window.delete_item(id);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function toggleCheck(id) {
+            try {
+                const result = window.toggle_check(id);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function updateValue(id, newValue) {
+            try {
+                const result = window.update_value(id, parseFloat(newValue) || 0);
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function updateAmount(id, newAmount) {
+            try {
+                const result = window.update_amount(id, Math.max(1, parseInt(newAmount) || 1));
+                if (result) renderCart(JSON.parse(result));
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function renderCart(cartData) {
+            const itemsList = document.getElementById('itemsList');
+            itemsList.innerHTML = '';
+
+            if (!cartData || !cartData.items || cartData.items.length === 0) {
+                itemsList.innerHTML = '<p>Belum ada item</p>';
+            } else {
+                cartData.items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.style.marginBottom = '15px';
+                    itemEl.style.padding = '10px';
+                    itemEl.style.border = '1px solid #ddd';
+                    itemEl.style.borderRadius = '5px';
+                    const itemTotal = item.value * item.amount;
+                    
+                    // Create checkbox with proper event handler
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = item.checked;
+                    checkbox.onchange = (e) => {
+                        toggleCheck(item.id);
+                    };
+                    
+                    // Create price input
+                    const priceInput = document.createElement('input');
+                    priceInput.type = 'number';
+                    priceInput.value = item.value;
+                    priceInput.style.width = '80px';
+                    priceInput.min = '0';
+                    priceInput.step = '0.01';
+                    priceInput.onchange = (e) => {
+                        updateValue(item.id, e.target.value);
+                    };
+                    
+                    // Create amount input
+                    const amountInput = document.createElement('input');
+                    amountInput.type = 'number';
+                    amountInput.value = item.amount;
+                    amountInput.style.width = '80px';
+                    amountInput.min = '1';
+                    amountInput.step = '1';
+                    amountInput.onchange = (e) => {
+                        updateAmount(item.id, e.target.value);
+                    };
+                    
+                    // Create delete button
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Hapus';
+                    deleteBtn.style.marginTop = '8px';
+                    deleteBtn.onclick = (e) => {
+                        deleteItem(item.id);
+                    };
+                    
+                    // Build the item element
+                    itemEl.innerHTML = '';
+                    const nameDiv = document.createElement('div');
+                    nameDiv.appendChild(checkbox);
+                    const label = document.createElement('strong');
+                    label.textContent = item.name;
+                    nameDiv.appendChild(label);
+                    itemEl.appendChild(nameDiv);
+                    
+                    const priceDiv = document.createElement('div');
+                    priceDiv.style.marginTop = '8px';
+                    priceDiv.textContent = 'Harga: ';
+                    priceDiv.appendChild(priceInput);
+                    const priceSpan = document.createElement('span');
+                    priceSpan.textContent = ' Rp';
+                    priceDiv.appendChild(priceSpan);
+                    itemEl.appendChild(priceDiv);
+                    
+                    const amountDiv = document.createElement('div');
+                    amountDiv.style.marginTop = '8px';
+                    amountDiv.textContent = 'Jumlah: ';
+                    amountDiv.appendChild(amountInput);
+                    itemEl.appendChild(amountDiv);
+                    
+                    const subtotalDiv = document.createElement('div');
+                    subtotalDiv.style.marginTop = '8px';
+                    const subtotalLabel = document.createElement('strong');
+                    subtotalLabel.textContent = 'Subtotal: Rp ' + itemTotal.toFixed(2);
+                    subtotalDiv.appendChild(subtotalLabel);
+                    itemEl.appendChild(subtotalDiv);
+                    
+                    itemEl.appendChild(deleteBtn);
+                    itemsList.appendChild(itemEl);
+                });
+            }
+
+            if (cartData) {
+                document.getElementById('totalItems').textContent = cartData.totalItems || 0;
+                document.getElementById('totalPrice').textContent = (cartData.totalPrice || 0).toFixed(2);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('[App] Page loaded, initializing cart...');
+            setTimeout(async function() {
+                try {
+                    let result = window.get_cart();
+                    if (result instanceof Promise) {
+                        result = await result;
+                    }
+                    if (result) {
+                        renderCart(JSON.parse(result));
+                    }
+                } catch (e) {
+                    console.log('[App] Error initializing:', e);
+                    renderCart({items: [], totalItems: 0, totalPrice: 0});
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
