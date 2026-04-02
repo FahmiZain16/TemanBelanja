@@ -45,20 +45,9 @@ Aplikasi admin dashboard untuk mengelola daftar belanja, inventaris, dan catatan
 
 3. **Compile ke executable:**
    ```bash
-   g++ -std=c++17 app.cpp -o app.exe -I./include
+   g++ app.cpp -o app.exe -Iinclude -L. -lwebui-2
    ```
 
-   Atau jika menggunakan Windows Subsystem dengan full optimization:
-   ```bash
-   g++ -std=c++17 -O2 app.cpp -o app.exe -I./include -static-libgcc -static-libstdc++
-   ```
-
-### Untuk Linux/macOS
-
-```bash
-g++ -std=c++17 app.cpp -o app -I./include
-./app
-```
 
 ## Menjalankan Aplikasi
 
@@ -67,12 +56,6 @@ g++ -std=c++17 app.cpp -o app -I./include
    app.exe
    ```
 
-2. **Linux/macOS:**
-   ```bash
-   ./app
-   ```
-
-3. Browser akan otomatis membuka aplikasi di `http://localhost:8080`
 
 ## Demo Akun
 
