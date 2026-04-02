@@ -1,1 +1,1 @@
-tes
+make the index.html files contains an app that manage things like shopping cart. User can add items, set its value, set its amount, checklist items, and delete items. Build all of functions app in main.cpp. Don't bother with the style, i'll do it myself.
