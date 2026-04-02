@@ -147,42 +147,6 @@
             }
         }
 
-        function deleteItem(id) {
-            try {
-                const result = window.delete_item(id);
-                if (result) renderCart(JSON.parse(result));
-            } catch (e) {
-                console.error('Error:', e);
-            }
-        }
-
-        function toggleCheck(id) {
-            try {
-                const result = window.toggle_check(id);
-                if (result) renderCart(JSON.parse(result));
-            } catch (e) {
-                console.error('Error:', e);
-            }
-        }
-
-        function updateValue(id, newValue) {
-            try {
-                const result = window.update_value(id, parseFloat(newValue) || 0);
-                if (result) renderCart(JSON.parse(result));
-            } catch (e) {
-                console.error('Error:', e);
-            }
-        }
-
-        function updateAmount(id, newAmount) {
-            try {
-                const result = window.update_amount(id, Math.max(1, parseInt(newAmount) || 1));
-                if (result) renderCart(JSON.parse(result));
-            } catch (e) {
-                console.error('Error:', e);
-            }
-        }
-
         function renderCart(cartData) {
             const itemsList = document.getElementById('itemsList');
             itemsList.innerHTML = '';
@@ -202,8 +166,8 @@
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.checked = item.checked;
-                    checkbox.onchange = (e) => {
-                        toggleCheck(item.id);
+                    checkbox.onchange = async () => {
+                        await toggleCheck(item.id);
                     };
                     
                     // Create price input
@@ -213,8 +177,8 @@
                     priceInput.style.width = '80px';
                     priceInput.min = '0';
                     priceInput.step = '0.01';
-                    priceInput.onchange = (e) => {
-                        updateValue(item.id, e.target.value);
+                    priceInput.onchange = async (e) => {
+                        await updateValue(item.id, e.target.value);
                     };
                     
                     // Create amount input
@@ -224,16 +188,16 @@
                     amountInput.style.width = '80px';
                     amountInput.min = '1';
                     amountInput.step = '1';
-                    amountInput.onchange = (e) => {
-                        updateAmount(item.id, e.target.value);
+                    amountInput.onchange = async (e) => {
+                        await updateAmount(item.id, e.target.value);
                     };
                     
                     // Create delete button
                     const deleteBtn = document.createElement('button');
                     deleteBtn.textContent = 'Hapus';
                     deleteBtn.style.marginTop = '8px';
-                    deleteBtn.onclick = (e) => {
-                        deleteItem(item.id);
+                    deleteBtn.onclick = async () => {
+                        await deleteItem(item.id);
                     };
                     
                     // Build the item element
