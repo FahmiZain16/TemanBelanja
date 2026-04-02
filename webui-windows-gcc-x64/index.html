@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teman Belanja</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="page active">
+        <div class="min-h-screen bg-gradient">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="logo-section">
+                        <h1>Teman Belanja</h1>
+                        <p class="subtitle">Kelola belanja dan inventaris Anda</p>
+                    </div>
+                    <form id="loginForm" class="form-section" onsubmit="window.handleLogin(event)">
+                        <div id="loginError" class="error-message" style="display: none;"></div>
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" placeholder="nama@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width">Masuk</button>
+                    </form>
+                    <p class="switch-form">Belum punya akun? <a href="#" onclick="switchToSignup()">Daftar</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGNUP PAGE -->
+    <div id="signupPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="logo-section">
+                        <h1>Buat Akun</h1>
+                        <p class="subtitle">Bergabung dengan Teman Belanja</p>
+                    </div>
+                    <form id="signupForm" class="form-section" onsubmit="window.handleSignup(event)">
+                        <div id="signupError" class="error-message" style="display: none;"></div>
+                        <div class="form-group">
+                            <label for="signupName">Nama Lengkap</label>
+                            <input type="text" id="signupName" placeholder="Nama Anda" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail">Email</label>
+                            <input type="email" id="signupEmail" placeholder="email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width">Daftar</button>
+                    </form>
+                    <p class="switch-form">Sudah punya akun? <a href="#" onclick="switchToLogin()">Masuk</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1>Teman Belanja</h1>
+                        <p id="userGreeting">Selamat datang!</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="logout()">Keluar</button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="dashboard-grid">
+                    <!-- Daftar Belanja Card -->
+                    <div class="dashboard-card" onclick="goToPage('shoppingListPage')">
+                        <div class="card-icon blue">🛒</div>
+                        <h2>Daftar Belanja</h2>
+                        <p>Kelola daftar belanja Anda</p>
+                        <div class="card-stat" id="shoppingListStat">0 daftar</div>
+                    </div>
+
+                    <!-- Inventaris Card -->
+                    <div class="dashboard-card" onclick="goToPage('inventoryPage')">
+                        <div class="card-icon green">📦</div>
+                        <h2>Inventaris</h2>
+                        <p>Kelola stok barang Anda</p>
+                        <div class="card-stat" id="inventoryStat">0 inventaris</div>
+                    </div>
+
+                    <!-- Keuangan Card -->
+                    <div class="dashboard-card" onclick="goToPage('financialPage')">
+                        <div class="card-icon purple">💰</div>
+                        <h2>Catatan Keuangan</h2>
+                        <p>Kelola keuangan Anda</p>
+                        <div class="card-stat" id="financialStat">Rp 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOPPING LIST PAGE -->
+    <div id="shoppingListPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="btn-icon" onclick="goToPage('dashboardPage')">←</button>
+                        <div class="header-title">
+                            <h1>Daftar Belanja</h1>
+                            <p>Kelola daftar belanja Anda</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showModal('createListModal')">
+                        + Buat Daftar Baru
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="emptyShoppingState" class="empty-state" style="display: none;">
+                    <div style="font-size: 48px; margin-bottom: 1rem;">🛒</div>
+                    <h3>Belum Ada Daftar Belanja</h3>
+                    <p>Mulai buat daftar belanja pertama Anda</p>
+                    <button class="btn btn-primary" onclick="showModal('createListModal')">Buat Daftar Baru</button>
+                </div>
+                <div id="shoppingGrid" class="card-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOPPING LIST DETAIL PAGE -->
+    <div id="shoppingListDetailPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content" style="flex-direction: column; align-items: stretch;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <button class="btn-icon" onclick="goToPage('shoppingListPage')">←</button>
+                            <div class="header-title">
+                                <h1 id="detailListName">Daftar Belanja</h1>
+                                <p><span id="checkedCount">0</span> dari <span id="totalCount">0</span> item terbeli</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="showModal('addItemModal')">+ Tambah Item</button>
+                    </div>
+                    <div class="summary-bar">
+                        <div class="summary-item blue">
+                            <span>Total Item:</span>
+                            <span id="summaryTotal">0</span>
+                        </div>
+                        <div class="summary-item green">
+                            <span>Total Harga:</span>
+                            <span id="summaryPrice">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="emptyItemsState" class="empty-state" style="display: none;">
+                    <h3>Belum Ada Item</h3>
+                    <p>Tambahkan item ke daftar belanja Anda</p>
+                    <button class="btn btn-primary" onclick="showModal('addItemModal')">Tambah Item Pertama</button>
+                </div>
+                <div id="itemsList" class="list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY PAGE -->
+    <div id="inventoryPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="btn-icon" onclick="goToPage('dashboardPage')">←</button>
+                        <div class="header-title">
+                            <h1>Inventaris</h1>
+                            <p>Kelola stok barang Anda</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showInventoryOptions()">+ Buat Inventaris</button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="emptyInventoryState" class="empty-state" style="display: none;">
+                    <div style="font-size: 48px; margin-bottom: 1rem;">📦</div>
+                    <h3>Belum Ada Inventaris</h3>
+                    <p>Buat inventaris untuk mengelola stok barang Anda</p>
+                    <button class="btn btn-primary" onclick="showInventoryOptions()">Buat Inventaris</button>
+                </div>
+                <div id="inventoryGrid" class="card-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FINANCIAL PAGE -->
+    <div id="financialPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="btn-icon" onclick="goToPage('dashboardPage')">←</button>
+                        <div class="header-title">
+                            <h1>Catatan Keuangan</h1>
+                            <p>Kelola pemasukan dan pengeluaran</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage('financialDetailPage')">+ Tambah Catatan</button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="emptyFinancialState" class="empty-state" style="display: none;">
+                    <div style="font-size: 48px; margin-bottom: 1rem;">💰</div>
+                    <h3>Belum Ada Catatan</h3>
+                    <p>Mulai catat pemasukan dan pengeluaran Anda</p>
+                    <button class="btn btn-primary" onclick="goToPage('financialDetailPage')">Tambah Catatan</button>
+                </div>
+                <div id="financialList" class="list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FINANCIAL DETAIL PAGE -->
+    <div id="financialDetailPage" class="page">
+        <div class="min-h-screen bg-gradient">
+            <div class="header">
+                <div class="header-content">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button class="btn-icon" onclick="goToPage('financialPage')">←</button>
+                        <div class="header-title">
+                            <h1>Tambah Catatan Keuangan</h1>
+                            <p>Mulai catat pemasukan dan pengeluaran Anda</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="financial-form-container">
+                    <div class="form-card">
+                        <h2>Input Catatan</h2>
+                        <form onsubmit="window.addFinancialRecord(event)">
+                            <div class="form-group">
+                                <label>Deskripsi</label>
+                                <input type="text" id="finDesc" placeholder="Contoh: Beli stok barang" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tipe</label>
+                                    <select id="finType" required>
+                                        <option value="income">Pemasukan</option>
+                                        <option value="expense">Pengeluaran</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Kategori</label>
+                                    <select id="finCategory" required>
+                                        <option value="Modal">Modal</option>
+                                        <option value="Operasional">Operasional</option>
+                                        <option value="Penjualan">Penjualan</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Jumlah (Rp)</label>
+                                <input type="number" id="finAmount" placeholder="0" min="0" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary full-width">Simpan Catatan</button>
+                        </form>
+                    </div>
+
+                    <div class="summary-card">
+                        <h2>Ringkasan Keuangan</h2>
+                        <div class="financial-summary">
+                            <div class="summary-box income">
+                                <h4>Total Pemasukan</h4>
+                                <p id="totalIncome">Rp 0</p>
+                            </div>
+                            <div class="summary-box expense">
+                                <h4>Total Pengeluaran</h4>
+                                <p id="totalExpense">Rp 0</p>
+                            </div>
+                            <div class="summary-box balance">
+                                <h4>Saldo Bersih</h4>
+                                <p id="netBalance">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Create List Modal -->
+    <div id="createListModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buat Daftar Belanja Baru</h2>
+            </div>
+            <form onsubmit="window.createShoppingList(event)">
+                <div class="form-group">
+                    <label>Nama Daftar</label>
+                    <input type="text" id="newListName" placeholder="Contoh: Belanja Minggu" required autofocus>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('createListModal')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Buat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tambah Item Baru</h2>
+            </div>
+            <form onsubmit="window.addItemToList(event)">
+                <div class="form-group">
+                    <label>Nama Item</label>
+                    <input type="text" id="itemName" placeholder="Contoh: Beras" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah</label>
+                    <input type="number" id="itemQuantity" value="1" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Harga per Item (Opsional)</label>
+                    <input type="number" id="itemPrice" value="0" min="0" placeholder="0">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('addItemModal')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Tambah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="webui.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
