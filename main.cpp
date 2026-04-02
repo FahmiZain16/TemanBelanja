@@ -37,12 +37,14 @@ std::string cartToJson() {
     
     ss << "],";
     
-    // Calculate totals
+    // Calculate totals (only include unchecked items)
     int totalItems = 0;
     double totalPrice = 0;
     for (const auto& item : cart) {
-        totalItems += item.amount;
-        totalPrice += item.value * item.amount;
+        if (!item.checked) {  // Only count unchecked items
+            totalItems += item.amount;
+            totalPrice += item.value * item.amount;
+        }
     }
     
     ss << "\"totalItems\":" << totalItems
